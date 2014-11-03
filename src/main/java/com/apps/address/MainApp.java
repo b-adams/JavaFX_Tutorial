@@ -29,8 +29,11 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
+import static com.apps.address.util.OptionalEx.ifPresent;
+
 public class MainApp extends Application {
 
+    public static final String LAST_OPENED_FILE = "filePath";
     private Stage primaryStage;
     private BorderPane rootLayout;
 
@@ -187,7 +190,7 @@ public class MainApp extends Application {
     @Nullable
     public Optional<Path> getPersonFilePath() {
         Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
-        return Optional.ofNullable(prefs.get("filePath", null))
+        return Optional.ofNullable(prefs.get(LAST_OPENED_FILE, null))
                 .map(Paths::get);
     }
 
@@ -195,21 +198,21 @@ public class MainApp extends Application {
      * Sets the file path of the currently loaded file. The path is persisted in
      * the OS specific registry.
      *
-     * @param file the file or null to remove the path
+     * @param filePath the file or null to remove the path
      */
-    public void setPersonFilePath(@Nullable Path file) {
+    public void setPersonFilePath(@Nullable Path filePath) {
         Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
-        if (file != null) {
-            prefs.put("filePath", file.toString());
+        Optional<Path> file = Optional.ofNullable(filePath);
+        ifPresent(file,
+                f -> prefs.put(LAST_OPENED_FILE, f.toString()))
+                .orElse(() -> prefs.remove(LAST_OPENED_FILE));
 
-            // Update the stage title.
-            primaryStage.setTitle("AddressApp - " + file.getFileName().toString());
-        } else {
-            prefs.remove("filePath");
+        // Update the stage title.
+        primaryStage.setTitle("AddressApp" + file
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .map(fps -> " - " + fps).orElse(""));
 
-            // Update the stage title.
-            primaryStage.setTitle("AddressApp");
-        }
     }
 
     /**

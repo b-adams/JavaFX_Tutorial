@@ -7,6 +7,7 @@ package com.apps.address.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 /**
  * Helper functions for handling dates.
@@ -30,10 +31,9 @@ public class DateUtil {
      * @return formatted string
      */
     public static String format(LocalDate date) {
-        if (date == null) {
-            return null;
-        }
-        return DATE_FORMATTER.format(date);
+        return Optional.ofNullable(date)
+                .map(DATE_FORMATTER::format)
+                .orElse(null);
     }
 
     /**

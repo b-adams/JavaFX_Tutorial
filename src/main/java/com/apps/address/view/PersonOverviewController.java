@@ -9,6 +9,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.controlsfx.dialog.Dialogs;
 
+import java.util.Optional;
+
+import static com.apps.address.util.OptionalEx.ifPresent;
+
 /**
  * Created by badams on 11/2/14.
  */
@@ -82,24 +86,20 @@ public class PersonOverviewController {
      * @param person the person or null
      */
     private void showPersonDetails(Person person) {
-        if (person != null) {
-            // Fill the labels with info from the person object.
-            firstNameLabel.setText(person.getFirstName());
-            lastNameLabel.setText(person.getLastName());
-            streetLabel.setText(person.getStreet());
-            postalCodeLabel.setText(Integer.toString(person.getPostalCode()));
-            cityLabel.setText(person.getCity());
+        Optional<Person> p = Optional.ofNullable(person);
 
-            birthdayLabel.setText(DateUtil.format(person.getBirthday()));
-        } else {
-            // Person is null, remove all the text.
-            firstNameLabel.setText("");
-            lastNameLabel.setText("");
-            streetLabel.setText("");
-            postalCodeLabel.setText("");
-            cityLabel.setText("");
-            birthdayLabel.setText("");
-        }
+        // Fill the labels with info from the person object.
+        // Or, if Person is null, remove all the text.
+
+        firstNameLabel.setText(p.map(Person::getFirstName).orElse(""));
+        lastNameLabel.setText(p.map(Person::getLastName).orElse(""));
+        streetLabel.setText(p.map(Person::getStreet).orElse(""));
+        postalCodeLabel.setText(p.map(Person::getPostalCode)
+                .map(x -> Integer.toString((Integer)x)).orElse(""));
+        cityLabel.setText(p.map(Person::getCity).orElse(""));
+        birthdayLabel.setText(p.map(Person::getBirthday)
+                               .map(DateUtil::format).orElse(""));
+
     }
 
     /**
@@ -139,20 +139,14 @@ public class PersonOverviewController {
      */
     @FXML
     private void handleEditPerson() {
-        Person selectedPerson = personTable.getSelectionModel().getSelectedItem();
-        if (selectedPerson != null) {
-            boolean okClicked = mainApp.showPersonEditDialog(selectedPerson);
-            if (okClicked) {
-                showPersonDetails(selectedPerson);
-            }
-
-        } else {
-            // Nothing selected.
-            Dialogs.create()
-                    .title("No Selection")
-                    .masthead("No Person Selected")
-                    .message("Please select a person in the table.")
-                    .showWarning();
-        }
+        ifPresent(Optional.ofNullable(personTable.getSelectionModel().getSelectedItem())
+                .filter(mainApp::showPersonEditDialog),
+                this::showPersonDetails)
+                .orElse(()-> Dialogs.create()
+                        .title("No Selection")
+                        .masthead("No Person Selected")
+                        .message("Please select a person in the table.")
+                        .showWarning()
+        );
     }
 }
