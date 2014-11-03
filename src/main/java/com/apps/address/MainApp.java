@@ -4,6 +4,7 @@ package com.apps.address;/**
 
 import com.apps.address.model.Person;
 import com.apps.address.model.PersonListWrapper;
+import com.apps.address.view.BirthdayStatisticsController;
 import com.apps.address.view.PersonEditDialogController;
 import com.apps.address.view.PersonOverviewController;
 import com.apps.address.view.RootLayoutController;
@@ -269,6 +270,33 @@ public class MainApp extends Application {
             Dialogs.create().title("Error")
                     .masthead(String.format("Could not save data to file:%n%s", file.toString()))
                     .showException(e);
+        }
+    }
+
+    /**
+     * Opens a dialog to show birthday statistics.
+     */
+    public void showBirthdayStatistics() {
+        try {
+            // Load the fxml file and create a new stage for the popup.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/BirthdayStatistics.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Birthday Statistics");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the persons into the controller.
+            BirthdayStatisticsController controller = loader.getController();
+            controller.setPersonData(personData);
+
+            dialogStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

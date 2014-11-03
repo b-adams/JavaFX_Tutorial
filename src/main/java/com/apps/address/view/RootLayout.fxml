@@ -37,9 +37,12 @@
                   </MenuItem>
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Statistics">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#handleShowBirthdayStatistics" text="Show Statistics">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="B" control="UP" meta="DOWN" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
