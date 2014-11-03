@@ -4,6 +4,7 @@ package com.apps.address.model;
  * Created by badams on 11/2/14.
  */
 
+import com.apps.address.util.LocalDateAdapter;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -11,6 +12,7 @@ import org.reactfx.inhibeans.property.SimpleIntegerProperty;
 import org.reactfx.inhibeans.property.SimpleObjectProperty;
 import org.reactfx.inhibeans.property.SimpleStringProperty;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 
 /**
@@ -111,6 +113,7 @@ public class Person {
         return city;
     }
 
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getBirthday() {
         return birthday.get();
     }
